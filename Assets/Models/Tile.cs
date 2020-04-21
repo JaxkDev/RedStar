@@ -12,7 +12,7 @@ public enum TileType { Empty, Floor };
 public class Tile {
 
 	TileType type = TileType.Empty;
-	Action<Tile> cbTileTypeChange;
+	Action<Tile> cbTileChanged;
 
 	public TileType Type {
 		get { return this.type; }
@@ -20,8 +20,8 @@ public class Tile {
 			TileType oldType = type;
 			this.type = value;
 			//Update graphically.
-			if (cbTileTypeChange != null && oldType != this.type) {
-				cbTileTypeChange (this);
+			if (this.cbTileChanged != null && oldType != this.type) {
+				this.cbTileChanged (this);
 			}
 		}
 	}
@@ -42,11 +42,11 @@ public class Tile {
 	}
 
 	public void RegisterTileTypeChangeCallBack(Action<Tile> callback) {
-		this.cbTileTypeChange += callback;
+		this.cbTileChanged += callback;
 	}
 
     public void UnRegisterTileTypeChangeCallBack(Action<Tile> callback) {
-        this.cbTileTypeChange -= callback;
+        this.cbTileChanged -= callback;
     }
 
     public bool PlaceObject(Furniture objectInstance){

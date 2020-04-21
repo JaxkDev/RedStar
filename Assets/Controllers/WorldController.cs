@@ -24,7 +24,7 @@ public class WorldController : MonoBehaviour {
 	public int width;
 	public int height;
 
-	void Start () {
+	void OnEnable () {
 		if (WorldController.Instance != null) {
 			Debug.LogError ("More then one WorldController was initialised !");
 		}
@@ -53,10 +53,10 @@ public class WorldController : MonoBehaviour {
 				tile_go.name = "Tile_" + x + "_" + y;
 				tile_go.transform.position = new Vector3 (tile_data.X, tile_data.Y, 0);
 				tile_go.transform.SetParent(this.transform, true);
-
-				tile_data.RegisterTileTypeChangeCallBack(this.OnTileTypeChange);
 			}
 		}
+
+        this.world.RegisterTileChangedCallback(this.OnTileChanged);
 
         //Center the Camera.
         Camera.main.transform.position = new Vector3(this.world.Width / 2, this.world.Height / 2, Camera.main.transform.position.z);
@@ -89,13 +89,11 @@ public class WorldController : MonoBehaviour {
 			//remove from map.
 			this.tileGameObjectMap.Remove(tile_data);
 
-			tile_data.UnRegisterTileTypeChangeCallBack(this.OnTileTypeChange);
-
 			Destroy(tile_go);
 		}
 	}
 
-	void OnTileTypeChange(Tile tile_data) {
+	void OnTileChanged(Tile tile_data) {
 
 		if (this.tileGameObjectMap.ContainsKey(tile_data) == false) {
 			Debug.LogError ("tileGameObjectMap doesn't contain the tile_data for tile at (" + tile_data.X + "," + tile_data.Y + ")");

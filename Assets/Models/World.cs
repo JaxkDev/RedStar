@@ -19,6 +19,7 @@ public class World {
 	public int Height { get; protected set; }
 
     Action<Furniture> cbFurnitureCreated;
+    Action<Tile> cbTileChanged;
 
 	public World(int width = 100, int height = 100){
 		this.Width = width;
@@ -32,6 +33,7 @@ public class World {
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 this.tiles[x, y] = new Tile(this, x, y);
+                this.tiles[x, y].RegisterTileTypeChangeCallBack(this.OnTileChanged);
             }
         }
 
@@ -101,5 +103,17 @@ public class World {
 
     public void UnRegisterInstalledObjectCreatedCallback(Action<Furniture> callbackFunc) {
         this.cbFurnitureCreated -= callbackFunc;
+    }
+
+    public void RegisterTileChangedCallback(Action<Tile> callbackFunc) {
+        this.cbTileChanged += callbackFunc;
+    }
+
+    public void UnRegisterTileChangedCallback(Action<Tile> callbackFunc) {
+        this.cbTileChanged -= callbackFunc;
+    }
+
+    void OnTileChanged(Tile t) {
+        if(this.cbTileChanged != null) this.cbTileChanged(t);
     }
 }
