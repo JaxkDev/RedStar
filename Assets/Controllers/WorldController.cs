@@ -30,21 +30,15 @@ public class WorldController : MonoBehaviour {
 
 		WorldController.Instance = this;
 
+        //Load Resources:
+        this.LoadSprites();
+
         //Generate World:
 		this.world = new World(this.width, this.height);
         this.world.RegisterFurnitureCreatedCallback(this.OnFurnitureCreated);   
 
 		this.tileGameObjectMap = new Dictionary<Tile, GameObject>();
         this.furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
-        this.furnitureSprites = new Dictionary<string, Sprite>();
-
-        //Load Resources:
-        Sprite[] sprites = Resources.LoadAll<Sprite>("Images/InstalledObjects/");
-        Debug.Log("Loading sprites from resources...");
-        foreach(Sprite s in sprites) {
-            Debug.Log("'"+s.name + "' Loaded.");
-            this.furnitureSprites[s.name] = s;
-        }
 
         //Generate tilemap:
 		for (int x = 0; x < this.world.Width; x++) {
@@ -66,6 +60,19 @@ public class WorldController : MonoBehaviour {
 	}
 
 	void Update(){}
+
+    
+    void LoadSprites() {
+        this.furnitureSprites = new Dictionary<string, Sprite>();
+
+        //Load Resources:
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furniture/");
+        Debug.Log("Loading sprites from resources...");
+        foreach(Sprite s in sprites) {
+            Debug.Log("'" + s.name + "' Loaded.");
+            this.furnitureSprites[s.name] = s;
+        }
+    }
 
 
 	// DP - Not yet used could be for changing levels/floors....
@@ -134,12 +141,13 @@ public class WorldController : MonoBehaviour {
     }
 
     void OnFurnitureChanged(Furniture furn) {
-        Debug.LogError("--- NOT IMPLEMENTED ---"); //TODO 
-
         if(this.furnitureGameObjectMap.ContainsKey(furn) == false) {
             Debug.LogError("Furniture game object not found in the internal map.");
             return;
         }
+
+        GameObject furn_go = this.furnitureGameObjectMap[furn];
+        furn_go.GetComponent<SpriteRenderer>().sprite = this.GetSpriteForFurniture(furn);
     }
 
     Sprite GetSpriteForFurniture(Furniture furn) {

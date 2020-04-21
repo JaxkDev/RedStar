@@ -29,7 +29,7 @@ public class Tile {
     public Inventory inventory { get; protected set; }
 	public Furniture furniture { get; protected set; }
 
-	World world;
+	public World world { get; protected set; }
     
 	public int Y { get; protected set; }
 	public int X { get; protected set; }

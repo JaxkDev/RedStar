@@ -64,7 +64,28 @@ public class Furniture {
             return null;
         }
 
-		return instance;
+        Tile t;
+        int x = tile.X;
+        int y = tile.Y;
+
+        t = tile.world.GetTileAt(x, y + 1);
+        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            t.furniture.cbOnChanged(t.furniture);
+        }
+        t = tile.world.GetTileAt(x + 1, y);
+        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            t.furniture.cbOnChanged(t.furniture);
+        }
+        t = tile.world.GetTileAt(x, y - 1);
+        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            t.furniture.cbOnChanged(t.furniture);
+        }
+        t = tile.world.GetTileAt(x - 1, y);
+        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            t.furniture.cbOnChanged(t.furniture);
+        }
+
+        return instance;
 	}
 
     public void RegisterOnChangedCallback(Action<Furniture> callbackFunc) {
