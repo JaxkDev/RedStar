@@ -16,6 +16,7 @@ public class WorldController : MonoBehaviour {
 
     Dictionary<string, Sprite> furnitureSprites;
 
+    public Sprite emptySprite;
 	public Sprite floorSprite;
 
     public World world { get; protected set; }
@@ -48,7 +49,7 @@ public class WorldController : MonoBehaviour {
 
 				this.tileGameObjectMap.Add(tile_data, tile_go);
 
-				tile_go.AddComponent<SpriteRenderer>();
+                tile_go.AddComponent<SpriteRenderer>().sprite = emptySprite;
 				tile_go.name = "Tile_" + x + "_" + y;
 				tile_go.transform.position = new Vector3 (tile_data.X, tile_data.Y, 0);
 				tile_go.transform.SetParent(this.transform, true);
@@ -56,7 +57,7 @@ public class WorldController : MonoBehaviour {
 				tile_data.RegisterTileTypeChangeCallBack(this.OnTileTypeChange);
 			}
 		}
-		this.world.RandomizeTiles();
+		//this.world.RandomizeTiles();
 	}
 
 	void Update(){}
@@ -105,9 +106,9 @@ public class WorldController : MonoBehaviour {
 		}
 			
 		if (tile_data.Type == TileType.Floor) {
-			tile_go.GetComponent<SpriteRenderer> ().sprite = floorSprite;
+			tile_go.GetComponent<SpriteRenderer> ().sprite = this.floorSprite;
 		} else if (tile_data.Type == TileType.Empty) {
-			tile_go.GetComponent<SpriteRenderer> ().sprite = null;
+			tile_go.GetComponent<SpriteRenderer> ().sprite = this.emptySprite;
 		} else {
 			Debug.LogError ("onTileTypeChange - Unknown tile type '" + tile_data.Type + "'");
 		}
@@ -117,11 +118,6 @@ public class WorldController : MonoBehaviour {
 		int x = Mathf.FloorToInt (position.x);
 		int y = Mathf.FloorToInt (position.y);
 		return WorldController.Instance.world.GetTileAt(x, y);
-	}
-
-	//debug.
-	public void Randomize(){
-		this.world.RandomizeTiles();
 	}
 
     public void OnFurnitureCreated(Furniture furn) {

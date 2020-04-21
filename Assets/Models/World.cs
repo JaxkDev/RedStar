@@ -76,7 +76,6 @@ public class World {
     }
 
     public void RandomizeTiles(){
-		UnityEngine.Debug.Log ("Randomize");
 		for (int x = 0; x < this.Width; x++) {
 			for (int y = 0; y < this.Height; y++) {
 				if (UnityEngine.Random.Range(0, 2) == 0) {
