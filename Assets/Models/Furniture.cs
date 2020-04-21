@@ -30,6 +30,8 @@ public class Furniture {
 
     Action<Furniture> cbOnChanged;
 
+    Func<Tile, bool> funcPositionValidation;
+
     // TODO Larger options.
     // TODO Rotation.
     protected Furniture() {}
@@ -44,10 +46,18 @@ public class Furniture {
 		prototype.height = height;
         prototype.linksToNeighbour = linksToNeighbour;
 
+        prototype.funcPositionValidation = prototype.IsValidPosition;
+
 		return prototype;
 	}
 
 	static public Furniture PlaceInstance(Furniture proto, Tile tile){
+
+        if(proto.funcPositionValidation(tile) == false) {
+            //Debug.LogError("Cannot place furniture here.");
+            return null;
+        }
+
 		Furniture instance = new Furniture();
 
 		instance.furnitureType = proto.furnitureType;
@@ -64,25 +74,27 @@ public class Furniture {
             return null;
         }
 
-        Tile t;
-        int x = tile.X;
-        int y = tile.Y;
+        if(instance.linksToNeighbour == true) {
+            Tile t;
+            int x = tile.X;
+            int y = tile.Y;
 
-        t = tile.world.GetTileAt(x, y + 1);
-        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
-            t.furniture.cbOnChanged(t.furniture);
-        }
-        t = tile.world.GetTileAt(x + 1, y);
-        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
-            t.furniture.cbOnChanged(t.furniture);
-        }
-        t = tile.world.GetTileAt(x, y - 1);
-        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
-            t.furniture.cbOnChanged(t.furniture);
-        }
-        t = tile.world.GetTileAt(x - 1, y);
-        if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
-            t.furniture.cbOnChanged(t.furniture);
+            t = tile.world.GetTileAt(x, y + 1);
+            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = tile.world.GetTileAt(x + 1, y);
+            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = tile.world.GetTileAt(x, y - 1);
+            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = tile.world.GetTileAt(x - 1, y);
+            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+                t.furniture.cbOnChanged(t.furniture);
+            }
         }
 
         return instance;
@@ -94,5 +106,19 @@ public class Furniture {
 
     public void UnRegisterOnChangedCallback(Action<Furniture> callbackFunc) {
         this.cbOnChanged -= callbackFunc;
+    }
+
+    public bool IsValidPosition(Tile t) {
+        // Called pre-build to check environment.
+        if(t.Type != TileType.Floor) {
+            //Cannot build on top of nothing !
+            return false;
+        }
+
+        if(t.furniture != null) {
+            return false;
+        }
+
+        return true;
     }
 }
