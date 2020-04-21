@@ -57,6 +57,10 @@ public class WorldController : MonoBehaviour {
 				tile_data.RegisterTileTypeChangeCallBack(this.OnTileTypeChange);
 			}
 		}
+
+        //Center the Camera.
+        Camera.main.transform.position = new Vector3(this.world.Width / 2, this.world.Height / 2, Camera.main.transform.position.z);
+
 		//this.world.RandomizeTiles();
 	}
 
