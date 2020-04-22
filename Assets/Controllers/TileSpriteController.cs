@@ -25,7 +25,9 @@ public class TileSpriteController: MonoBehaviour {
 
                 this.tileGameObjectMap.Add(tile_data, tile_go);
 
-                tile_go.AddComponent<SpriteRenderer>().sprite = emptySprite;
+                SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer>();
+                tile_sr.sprite = emptySprite;
+                tile_sr.sortingLayerName = "Tiles";
                 tile_go.name = "Tile_" + x + "_" + y;
                 tile_go.transform.position = new Vector3(tile_data.X, tile_data.Y, 0);
                 tile_go.transform.SetParent(this.transform, true);

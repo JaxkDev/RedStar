@@ -65,4 +65,16 @@ public class Tile {
         this.furniture = objectInstance;
         return true;
     }
+
+    public bool IsNeighbour(Tile tile, bool checkDiagonal = false) {
+        if(this.X == tile.X && (this.Y == tile.Y+1 || this.Y == tile.Y - 1)) return true;
+        if(this.Y == tile.Y && (this.X == tile.X+1 || this.X == tile.X - 1)) return true;
+
+        if(checkDiagonal == true) {
+            if(this.X == tile.X + 1 && this.Y == tile.Y + 1 || this.Y == tile.Y - 1) return true;
+            if(this.X == tile.X - 1 && this.Y == tile.Y + 1 || this.Y == tile.Y - 1) return true;
+        }
+
+        return false;
+    }
 }

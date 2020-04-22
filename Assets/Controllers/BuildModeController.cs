@@ -40,7 +40,7 @@ public class BuildModeController : MonoBehaviour {
 
             //Queue the job:
             string furnitureType = this.buildModeFurniture;
-            Job j = new Job(tile, (job) => {
+            Job j = new Job(tile, furnitureType, (job) => {
                 WorldController.Instance.world.PlaceFurniture(furnitureType, job.tile);
                 job.tile.pendingFurnitureJob = null;
             }, 1);
@@ -53,7 +53,7 @@ public class BuildModeController : MonoBehaviour {
 
             WorldController.Instance.world.jobQueue.Enqueue(j);
 
-            Debug.Log("New job added, Queue size is " + WorldController.Instance.world.jobQueue.Count);
+            Debug.Log("New job added to job queue.");
         } else {
             tile.Type = this.buildModeTile;
         }

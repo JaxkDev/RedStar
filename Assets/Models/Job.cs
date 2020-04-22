@@ -11,12 +11,15 @@ public class Job {
 
     float jobTime = 1f; // How long does this job take ?
 
+    public string jobObjectType { get; protected set; }
+
     Action<Job> cbJobCompleted;
     //callback for started?
     Action<Job> cbJobCancelled;
 
-    public Job (Tile tile, Action<Job> cbJobCompleted, float jobTime = 1f){
+    public Job (Tile tile, string jobObjectType, Action<Job> cbJobCompleted, float jobTime = 1f){
         this.tile = tile;
+        this.jobObjectType = jobObjectType;
         this.jobTime = jobTime;
 
         this.cbJobCompleted += cbJobCompleted;

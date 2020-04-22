@@ -59,7 +59,17 @@ public class FurnitureSpriteController: MonoBehaviour {
         furn_go.GetComponent<SpriteRenderer>().sprite = this.GetSpriteForFurniture(furn);
     }
 
-    Sprite GetSpriteForFurniture(Furniture furn) {
+    public Sprite GetSpriteForFurniture(string furnitureType) {
+        if(this.furnitureSprites.ContainsKey(furnitureType)) return this.furnitureSprites[furnitureType];
+
+        if(this.furnitureSprites.ContainsKey(furnitureType+"_")) return this.furnitureSprites[furnitureType+"_"];
+
+        Debug.LogError("No sprite for furniture type: " + furnitureType);
+
+        return null;
+    }
+
+    public Sprite GetSpriteForFurniture(Furniture furn) {
         if(furn.linksToNeighbour == false) {
             return this.furnitureSprites[furn.furnitureType];
         }

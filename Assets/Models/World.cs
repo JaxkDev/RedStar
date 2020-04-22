@@ -5,7 +5,6 @@
 
 using System;
 using UnityEngine;
-using System.Collections;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -13,22 +12,26 @@ public class World {
 
 	Tile[,] tiles;
 
+    List<Character> characters;
+
     Dictionary<string, Furniture> furniturePrototypes;
 
 	public int Width { get; protected set; }
 	public int Height { get; protected set; }
 
+    Action<Character> cbCharacterCreated;
     Action<Furniture> cbFurnitureCreated;
     Action<Tile> cbTileChanged;
 
-    public Queue<Job> jobQueue { get; protected set; }
+    public JobQueue jobQueue;
 
 	public World(int width = 100, int height = 100){
 		this.Width = width;
 		this.Height = height;
 
 		this.tiles = new Tile[width, height];
-        this.jobQueue = new Queue<Job>();
+        this.characters = new List<Character>();
+        this.jobQueue = new JobQueue();
 
 		Stopwatch stopwatch = new Stopwatch();
 
@@ -42,10 +45,29 @@ public class World {
 
         this.CreateFurniturePrototypes();
 
+
         stopwatch.Stop();
 
 		UnityEngine.Debug.Log ("World created with " + width * height + " tiles in " + stopwatch.ElapsedMilliseconds + "ms");
 	}
+
+
+    public void Update(float deltaTime) {
+        foreach(Character c in this.characters) {
+            c.Update(deltaTime);
+        }
+    }
+
+
+
+    public Character CreateCharacter(Tile tile) {
+        Character c = new Character(tile);
+        this.characters.Add(c);
+
+        if(this.cbCharacterCreated != null) this.cbCharacterCreated(c);
+
+        return c;
+    }
 
     void CreateFurniturePrototypes() {
         this.furniturePrototypes = new Dictionary<string, Furniture>();
@@ -92,13 +114,13 @@ public class World {
 		}
 	}
 
-	public Tile GetTileAt(int x, int y){
-		if (x >= this.Width || x < 0 || y >= this.Height || y < 0) {
-			UnityEngine.Debug.LogError("Tile requested at (" + x + "," + y + ") is out of range.");
-			return null;
-		}
-		return this.tiles[x,y];
-	}
+    public Tile GetTileAt(int x, int y) {
+        if(x >= this.Width || x < 0 || y >= this.Height || y < 0) {
+            UnityEngine.Debug.LogError("Tile requested at (" + x + "," + y + ") is out of range.");
+            return null;
+        }
+        return this.tiles[x, y];
+    }
 
     public void RegisterFurnitureCreatedCallback(Action<Furniture> callbackFunc) {
         this.cbFurnitureCreated += callbackFunc;
@@ -116,11 +138,28 @@ public class World {
         this.cbTileChanged -= callbackFunc;
     }
 
+    public void RegisterCharacterCreatedCallback(Action<Character> callbackFunc) {
+        this.cbCharacterCreated += callbackFunc;
+    }
+
+    public void UnRegisterCharacterCreatedCallback(Action<Character> callbackFunc) {
+        this.cbCharacterCreated -= callbackFunc;
+    }
+
     void OnTileChanged(Tile t) {
         if(this.cbTileChanged != null) this.cbTileChanged(t);
     }
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t) {
         return this.furniturePrototypes[furnitureType].IsValidPosition(t);
+    }
+
+    public Furniture GetFurniturePrototype(string furnitureType) {
+        if(this.furniturePrototypes.ContainsKey(furnitureType) == false) {
+            UnityEngine.Debug.LogError("No furniture prototype with name: " + furnitureType);
+            return null;
+        }
+
+        return this.furniturePrototypes[furnitureType];
     }
 }
