@@ -5,28 +5,26 @@
 
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
 using System.Collections.Generic;
 
 public class MouseController : MonoBehaviour {
 
 	public GameObject circleCursorPrefab;
 
-	bool buildModeIsObjects = false;
-    string buildModeObject;
-	TileType buildModeTile = TileType.Floor;
-
 	//Position in world NOT screen.
-	private Vector3 lastFramePosition;
-	private Vector3 currentFramePosition;
+	Vector3 lastFramePosition;
+	Vector3 currentFramePosition;
 
-	private Vector3 dragStartPosition;
-	private List<GameObject> dragPreviewGameObjects;
+	Vector3 dragStartPosition;
+	List<GameObject> dragPreviewGameObjects;
+
+    BuildModeController buildModeController;
 
 	void Start () {
 		this.dragPreviewGameObjects = new List<GameObject>();
+        this.buildModeController = GameObject.FindObjectOfType<BuildModeController>();
 
-		SimplePool.Preload(circleCursorPrefab, 1000);
+		SimplePool.Preload(circleCursorPrefab, 100);
 	}
 		
 	void Update () {
@@ -45,22 +43,6 @@ public class MouseController : MonoBehaviour {
 
 		this.lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition); //Cannot be currentFramePosition due to movement.
 		this.lastFramePosition.z = 0;
-	}
-
-	public void SetMode_BuildInstalledObject(string objectType){
-		//Not a tile.
-		this.buildModeIsObjects = true;
-        this.buildModeObject = objectType;
-	}
-
-	public void SetMode_BuildFloor(){
-		this.buildModeIsObjects = false;
-		this.buildModeTile = TileType.Floor;
-	}
-
-	public void SetMode_Bulldoze(){
-		this.buildModeIsObjects = false;
-		this.buildModeTile = TileType.Empty;
 	}
 
 	void UpdateDrag(){
@@ -126,12 +108,8 @@ public class MouseController : MonoBehaviour {
 					Tile t = WorldController.Instance.world.GetTileAt (x, y);
 
 					if (t != null) {
-						if (this.buildModeIsObjects == true) {
-                            //Create object
-                            WorldController.Instance.world.PlaceFurniture(this.buildModeObject, t);
-						} else {
-							t.Type = this.buildModeTile;
-						}
+                        // BuildModeController - handle build on tile.
+                        this.buildModeController.DoBuild(t);
 					}
 				}
 			}
@@ -148,15 +126,4 @@ public class MouseController : MonoBehaviour {
 		Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis ("Mouse ScrollWheel");
 		Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 24.275f);
 	}
-
-//	void UpdateCursor(){
-//		Tile tileUnderMouse = WorldController.Instance.getTileAtWorldPosition(currentFramePosition);
-//		if (tileUnderMouse != null) {
-//			this.circleCursor.SetActive(true);
-//			Vector3 cursorPosition = new Vector3(tileUnderMouse.X, tileUnderMouse.Y, 0);
-//			this.circleCursor.transform.position = cursorPosition;
-//		} else {
-//			this.circleCursor.SetActive(false);
-//		}
-//	}
 }

@@ -4,7 +4,6 @@
  ******************************************/
 
 using UnityEngine;
-using System.Collections;
 
 public class SoundController: MonoBehaviour {
     //TODO RESOURCE PATHS.

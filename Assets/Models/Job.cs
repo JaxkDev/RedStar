@@ -4,12 +4,10 @@
  ******************************************/
 
 using System;
-using UnityEngine;
-using System.Collections;
 
 public class Job {
 
-    Tile tile; // Where's this job happening ?
+    public Tile tile { get; protected set; } // Where's this job happening ?
 
     float jobTime = 1f; // How long does this job take ?
 
@@ -30,6 +28,14 @@ public class Job {
 
     public void UnRegisterJobCompletedCallback(Action<Job> cb) {
         this.cbJobCompleted -= cb;
+    }
+
+    public void RegisterJobCancelledCallback(Action<Job> cb) {
+        this.cbJobCancelled += cb;
+    }
+
+    public void UnRegisterJobCancelledCallback(Action<Job> cb) {
+        this.cbJobCancelled -= cb;
     }
 
     public void DoWork(float workTime) {

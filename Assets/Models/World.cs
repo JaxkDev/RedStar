@@ -21,11 +21,14 @@ public class World {
     Action<Furniture> cbFurnitureCreated;
     Action<Tile> cbTileChanged;
 
+    public Queue<Job> jobQueue { get; protected set; }
+
 	public World(int width = 100, int height = 100){
 		this.Width = width;
 		this.Height = height;
 
 		this.tiles = new Tile[width, height];
+        this.jobQueue = new Queue<Job>();
 
 		Stopwatch stopwatch = new Stopwatch();
 
@@ -115,5 +118,9 @@ public class World {
 
     void OnTileChanged(Tile t) {
         if(this.cbTileChanged != null) this.cbTileChanged(t);
+    }
+
+    public bool IsFurniturePlacementValid(string furnitureType, Tile t) {
+        return this.furniturePrototypes[furnitureType].IsValidPosition(t);
     }
 }

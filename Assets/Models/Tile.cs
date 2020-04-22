@@ -29,6 +29,8 @@ public class Tile {
     public Inventory inventory { get; protected set; }
 	public Furniture furniture { get; protected set; }
 
+    public Job pendingFurnitureJob;
+
 	public World world { get; protected set; }
     
 	public int Y { get; protected set; }

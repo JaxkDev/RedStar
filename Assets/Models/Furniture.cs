@@ -46,7 +46,7 @@ public class Furniture {
 		prototype.height = height;
         prototype.linksToNeighbour = linksToNeighbour;
 
-        prototype.funcPositionValidation = prototype.IsValidPosition;
+        prototype.funcPositionValidation = prototype.__IsValidPosition;
 
 		return prototype;
 	}
@@ -107,8 +107,12 @@ public class Furniture {
     public void UnRegisterOnChangedCallback(Action<Furniture> callbackFunc) {
         this.cbOnChanged -= callbackFunc;
     }
-
+    
     public bool IsValidPosition(Tile t) {
+        return this.funcPositionValidation(t);
+    }
+
+    public bool __IsValidPosition(Tile t) {
         // Called pre-build to check environment.
         if(t.Type != TileType.Floor) {
             //Cannot build on top of nothing !
