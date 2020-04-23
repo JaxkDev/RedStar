@@ -36,6 +36,14 @@ public class Tile {
 	public int Y { get; protected set; }
 	public int X { get; protected set; }
 
+    public float movementCost {
+        get {
+            if(this.type == TileType.Empty) return 0;
+            if(this.furniture == null) return 1; //Possibly tile defaults ?
+            return 1 * this.furniture.movementCost;
+        }
+    }
+
 
 	public Tile(World world, int x, int y) {
 		this.world = world;
@@ -67,14 +75,6 @@ public class Tile {
     }
 
     public bool IsNeighbour(Tile tile, bool checkDiagonal = false) {
-        if(this.X == tile.X && (this.Y == tile.Y+1 || this.Y == tile.Y - 1)) return true;
-        if(this.Y == tile.Y && (this.X == tile.X+1 || this.X == tile.X - 1)) return true;
-
-        if(checkDiagonal == true) {
-            if(this.X == tile.X + 1 && this.Y == tile.Y + 1 || this.Y == tile.Y - 1) return true;
-            if(this.X == tile.X - 1 && this.Y == tile.Y + 1 || this.Y == tile.Y - 1) return true;
-        }
-
-        return false;
+        return Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || (checkDiagonal && (Mathf.Abs(this.X - tile.X) == 1 && Mathf.Abs(this.Y - tile.Y) == 1));
     }
 }

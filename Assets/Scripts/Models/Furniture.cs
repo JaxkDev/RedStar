@@ -19,7 +19,7 @@ public class Furniture {
 
 	// So, this movementCost is a multiplier to slow down the entity moving through it (e.g. at cost 4, entity would move 1/4 of its speed through this tile.)
 	// IF 0 then entity's cannot pass through.
-	float movementCost = 1f;
+	public float movementCost { get; protected set; }
 
 	// The dimensions of the object in terms of code NOT visually.
 	int width = 1;
