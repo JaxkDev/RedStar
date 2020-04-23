@@ -13,7 +13,7 @@ public class World {
 
     List<Character> characters;
 
-    Path_TileGraph tileGraph;
+    public Path_TileGraph tileGraph;
 
     Dictionary<string, Furniture> furniturePrototypes;
 
