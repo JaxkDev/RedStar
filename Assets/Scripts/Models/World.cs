@@ -4,7 +4,6 @@
  ******************************************/
 
 using System;
-using UnityEngine;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -13,6 +12,8 @@ public class World {
 	Tile[,] tiles;
 
     List<Character> characters;
+
+    Path_TileGraph tileGraph;
 
     Dictionary<string, Furniture> furniturePrototypes;
 
@@ -99,10 +100,11 @@ public class World {
 
         if(this.cbFurnitureCreated != null) {
             this.cbFurnitureCreated(obj);
+            this.InvalidateTileGraph();
         }
     }
 
-    public void RandomizeTiles(){
+    /*public void RandomizeTiles(){
 		for (int x = 0; x < this.Width; x++) {
 			for (int y = 0; y < this.Height; y++) {
 				if (UnityEngine.Random.Range(0, 2) == 0) {
@@ -112,7 +114,35 @@ public class World {
 				}
 			}
 		}
-	}
+	}*/
+
+    public void InvalidateTileGraph() {
+        this.tileGraph = null;
+    }
+
+    public void SetupPathfinding() {
+        UnityEngine.Debug.Log("SetupPathfindingExample");
+
+        int l = Width / 2 - 5;
+        int b = Height / 2 - 5;
+
+        for(int x = l - 5; x < l + 15; x++) {
+            for(int y = b - 5; y < b + 15; y++) {
+                tiles[x, y].Type = TileType.Floor;
+
+
+                if(x == l || x == (l + 9) || y == b || y == (b + 9)) {
+                    if(x != (l + 9) && y != (b + 4)) {
+                        PlaceFurniture("Wall", tiles[x, y]);
+                    }
+                }
+
+
+
+            }
+        }
+
+    }
 
     public Tile GetTileAt(int x, int y) {
         if(x >= this.Width || x < 0 || y >= this.Height || y < 0) {
@@ -147,7 +177,10 @@ public class World {
     }
 
     void OnTileChanged(Tile t) {
-        if(this.cbTileChanged != null) this.cbTileChanged(t);
+        if(this.cbTileChanged != null) {
+            this.cbTileChanged(t);
+            this.InvalidateTileGraph();
+        }
     }
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t) {

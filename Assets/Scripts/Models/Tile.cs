@@ -5,7 +5,6 @@
 
 using System;
 using UnityEngine;
-using System.Collections;
 
 public enum TileType { Empty, Floor };
 
@@ -76,5 +75,24 @@ public class Tile {
 
     public bool IsNeighbour(Tile tile, bool checkDiagonal = false) {
         return Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || (checkDiagonal && (Mathf.Abs(this.X - tile.X) == 1 && Mathf.Abs(this.Y - tile.Y) == 1));
+    }
+
+    //TODO CACHE.
+    public Tile[] GetNeighbours(bool checkDiagonal = false) {
+        Tile[] ns = new Tile[checkDiagonal ? 8 : 4]; //N,E,S,W , NE,SE,SW,NW
+
+        ns[0] = this.world.GetTileAt(this.X, this.Y + 1);
+        ns[1] = this.world.GetTileAt(this.X + 1, this.Y);
+        ns[2] = this.world.GetTileAt(this.X, this.Y - 1);
+        ns[3] = this.world.GetTileAt(this.X - 1, this.Y);
+
+        if(checkDiagonal) {
+            ns[4] = this.world.GetTileAt(this.X + 1, this.Y + 1);
+            ns[5] = this.world.GetTileAt(this.X + 1, this.Y - 1);
+            ns[6] = this.world.GetTileAt(this.X - 1, this.Y - 1);
+            ns[7] = this.world.GetTileAt(this.X - 1, this.Y + 1);
+        }
+
+        return ns;
     }
 }

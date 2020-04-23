@@ -4,8 +4,6 @@
  ******************************************/
 
 using UnityEngine;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 public class BuildModeController : MonoBehaviour {
 
@@ -29,6 +27,12 @@ public class BuildModeController : MonoBehaviour {
 		this.buildModeIsFurniture = false;
 		this.buildModeTile = TileType.Empty;
 	}
+
+    public void DoPathfindingTest() {
+        WorldController.Instance.world.SetupPathfinding();
+
+        Path_TileGraph tileGraph = new Path_TileGraph(WorldController.Instance.world);
+    }
 
     public void DoBuild(Tile tile) {
         if(this.buildModeIsFurniture == true) {

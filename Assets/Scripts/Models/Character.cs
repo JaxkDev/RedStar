@@ -5,7 +5,6 @@
 
 using System;
 using UnityEngine;
-using System.Collections;
 
 public class Character {
     public float X {
@@ -48,10 +47,6 @@ public class Character {
             }
         }
 
-
-
-
-
         if(this.currTile == this.destTile) {
             if(this.currJob != null) {
                 this.currJob.DoWork(deltaTime);
@@ -67,6 +62,9 @@ public class Character {
         this.movementPercentage += percThisFrame;
 
         if(this.movementPercentage >= 1) {
+
+            //TODO Get next dest tile if not finished path.
+
             this.currTile = this.destTile;
             this.movementPercentage = 0f;
         }
