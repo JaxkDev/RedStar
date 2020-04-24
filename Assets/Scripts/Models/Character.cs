@@ -26,7 +26,7 @@ public class Character {
     Path_AStar pathAStar;
 
     float movementPercentage;
-    float movementSpeed = 2f; //Tiles per second.
+    float movementSpeed = 6f; //Tiles per second.
 
     Action<Character> cbCharacterChanged;
 
@@ -72,7 +72,7 @@ public class Character {
             if(this.pathAStar == null || this.pathAStar.Length() == 0) {
                 this.pathAStar = new Path_AStar(WorldController.Instance.world, this.currTile, this.destTile);
                 if(this.pathAStar.Length() == 0) {
-                    Debug.LogError("No path to destination !");
+                    //Debug.LogError("No path to destination !");
 
                     this.AbandonJob();
                     return;
@@ -80,10 +80,6 @@ public class Character {
             }
 
             this.nextTile = this.pathAStar.GetNextTile();
-
-            if(this.nextTile == this.currTile) {
-                Debug.LogError("Next tile == current tile ?");
-            }
 
         }
 

@@ -21,6 +21,13 @@ public class JobSpriteController : MonoBehaviour {
 
     void OnJobCreated(Job job) {
         Debug.Log("Job created !");
+
+
+        if(this.jobGameObjectMap.ContainsKey(job) == true) {
+            //Job requeued.
+            return;
+        }
+
         
         GameObject job_go = new GameObject();
 
