@@ -9,18 +9,21 @@ using UnityEngine;
 public class Character {
     public float X {
         get {
-            return Mathf.Lerp(currTile.X, destTile.X, movementPercentage);
+            return Mathf.Lerp(this.currTile.X, this.nextTile.X, movementPercentage);
         }
     }
 
     public float Y {
         get {
-            return Mathf.Lerp(currTile.Y, destTile.Y, movementPercentage);
+            return Mathf.Lerp(this.currTile.Y, this.nextTile.Y, movementPercentage);
         }
     }
 
     public Tile currTile { get; protected set; }
+    public Tile nextTile { get; protected set; }
     public Tile destTile { get; protected set; }
+
+    Path_AStar pathAStar;
 
     float movementPercentage;
     float movementSpeed = 2f; //Tiles per second.
@@ -30,11 +33,17 @@ public class Character {
     Job currJob;
 
     public Character(Tile currentTile) {
-        this.currTile = this.destTile = currentTile;
+        this.currTile = this.destTile = this.nextTile = currentTile;
     }
 
-    public void Update(float deltaTime) {
+    public void AbandonJob(bool ReEnqueue = true) {
+        this.nextTile = this.destTile = this.currTile;
+        this.pathAStar = null;
+        this.currTile.world.jobQueue.Enqueue(this.currJob);
+        this.currJob = null;
+    }
 
+    void Update_DoJob(float deltaTime) {
         if(this.currJob == null) {
             Job newJob = currTile.world.jobQueue.Dequeue();
 
@@ -53,8 +62,32 @@ public class Character {
             }
             return;
         }
+        return;
+    }
 
-        float distToTravel = Mathf.Sqrt(Mathf.Pow(this.currTile.X-this.destTile.X, 2) + Mathf.Pow(this.currTile.Y - this.destTile.Y, 2));
+    void Update_Move(float deltaTime) {
+        if(this.currTile == this.destTile) return;
+
+        if(this.nextTile == null || this.nextTile == this.currTile) {
+            if(this.pathAStar == null || this.pathAStar.Length() == 0) {
+                this.pathAStar = new Path_AStar(WorldController.Instance.world, this.currTile, this.destTile);
+                if(this.pathAStar.Length() == 0) {
+                    Debug.LogError("No path to destination !");
+
+                    this.AbandonJob();
+                    return;
+                }
+            }
+
+            this.nextTile = this.pathAStar.GetNextTile();
+
+            if(this.nextTile == this.currTile) {
+                Debug.LogError("Next tile == current tile ?");
+            }
+
+        }
+
+        float distToTravel = Mathf.Sqrt(Mathf.Pow(this.currTile.X - this.nextTile.X, 2) + Mathf.Pow(this.currTile.Y - this.nextTile.Y, 2));
         float distThisFrame = this.movementSpeed * deltaTime;
         float percThisFrame = distThisFrame / distToTravel; //MHM.
 
@@ -65,11 +98,16 @@ public class Character {
 
             //TODO Get next dest tile if not finished path.
 
-            this.currTile = this.destTile;
+            this.currTile = this.nextTile;
             this.movementPercentage = 0f;
         }
 
         if(this.cbCharacterChanged != null) this.cbCharacterChanged(this);
+    }
+
+    public void Update(float deltaTime) {
+        this.Update_DoJob(deltaTime);
+        this.Update_Move(deltaTime);
     }
 
     public void SetDestinationTile(Tile tile) {
@@ -95,6 +133,8 @@ public class Character {
             return;
         }
 
+        this.nextTile = this.destTile = this.currTile;
+        this.pathAStar = null;
         this.currJob = null;
     }
 }

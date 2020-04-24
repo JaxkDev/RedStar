@@ -47,7 +47,7 @@ public class BuildModeController : MonoBehaviour {
             Job j = new Job(tile, furnitureType, (job) => {
                 WorldController.Instance.world.PlaceFurniture(furnitureType, job.tile);
                 job.tile.pendingFurnitureJob = null;
-            }, 1);
+            }, 0.1f);
 
             //TODO CHANGE PUBLIC.
             tile.pendingFurnitureJob = j;

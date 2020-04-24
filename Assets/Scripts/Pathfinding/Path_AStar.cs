@@ -18,12 +18,18 @@ public class Path_AStar {
 
         Dictionary<Tile, Path_Node<Tile>> nodes = world.tileGraph.nodes;
 
-        Path_Node<Tile> startNode = nodes[tileStart];
-;       Path_Node<Tile> goalNode = nodes[tileEnd];
-
-        if(nodes.ContainsKey(tileStart) == false || nodes.ContainsKey(tileEnd) == false) {
-            Debug.LogError("And the world comes crashing down... (Starting/Ending tile is not in the list - Path_A*)");
+        if(nodes.ContainsKey(tileStart) == false){
+            Debug.LogError("And the world comes crashing down... (Starting tile is not in the list - Path_A*)");
+            return;
         }
+
+        if(nodes.ContainsKey(tileEnd) == false) {
+            Debug.LogError("And the world comes crashing down... (Ending tile is not in the list - Path_A*)");
+            return;
+        }
+
+        Path_Node<Tile> startNode = nodes[tileStart];
+        Path_Node<Tile> goalNode = nodes[tileEnd];
 
         // Based from the wikipedia A*_search_algorithm psuedocode:
 
@@ -59,7 +65,9 @@ public class Path_AStar {
                 Path_Node<Tile> neighbourNode = neighbour.node;
                 if(closedSet.Contains(neighbourNode) == true) continue; //Already checked this neighbour.
 
-                float tentative_g_score = g_score[currentNode] + dist_between(currentNode, neighbourNode);
+                float movementCost = dist_between(currentNode, neighbourNode) * neighbourNode.data.movementCost;
+
+                float tentative_g_score = g_score[currentNode] + movementCost;
 
                 if(openSet.Contains(neighbourNode) && tentative_g_score >= g_score[neighbourNode]) continue;
 
@@ -77,7 +85,7 @@ public class Path_AStar {
 
         // Gone through entire set, couldn't find a path !
         // Todo Fail.
-        throw new System.Exception("Woah couldnt find a path to that point !");
+        // throw new System.Exception("Woah couldnt find a path to that point !");
     }
 
     float heuristic_cost_estimate(Path_Node<Tile> a, Path_Node<Tile> b) {
@@ -110,4 +118,10 @@ public class Path_AStar {
     public Tile GetNextTile() {
         return this.path.Dequeue();
     }
+
+
+	public int Length(){
+		if(this.path == null) return 0;
+		return this.path.Count;
+	}
 }

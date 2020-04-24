@@ -17,7 +17,7 @@ public class Job {
     //callback for started?
     Action<Job> cbJobCancelled;
 
-    public Job (Tile tile, string jobObjectType, Action<Job> cbJobCompleted, float jobTime = 1f){
+    public Job (Tile tile, string jobObjectType, Action<Job> cbJobCompleted, float jobTime){
         this.tile = tile;
         this.jobObjectType = jobObjectType;
         this.jobTime = jobTime;

@@ -21,8 +21,6 @@ public class CharacterSpriteController : MonoBehaviour {
         WorldController.Instance.world.RegisterCharacterCreatedCallback(this.OnCharacterCreated);
 
         Character c = WorldController.Instance.world.CreateCharacter(WorldController.Instance.world.GetTileAt(WorldController.Instance.world.Width / 2, WorldController.Instance.world.Height / 2));
-
-        c.SetDestinationTile(WorldController.Instance.world.GetTileAt((WorldController.Instance.world.Width / 2) + 5, WorldController.Instance.world.Height / 2));
     }
 
     void LoadSprites() {

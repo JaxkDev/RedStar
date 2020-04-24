@@ -146,7 +146,7 @@ public class World {
 
     public Tile GetTileAt(int x, int y) {
         if(x >= this.Width || x < 0 || y >= this.Height || y < 0) {
-            UnityEngine.Debug.LogError("Tile requested at (" + x + "," + y + ") is out of range.");
+            //UnityEngine.Debug.LogError("Tile requested at (" + x + "," + y + ") is out of range.");
             return null;
         }
         return this.tiles[x, y];

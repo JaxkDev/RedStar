@@ -10,8 +10,6 @@ public class WorldController : MonoBehaviour {
 
     public World world { get; protected set; }
 
-    public float startDelay = 5f;
-
     void OnEnable() {
         if(WorldController.Instance != null) {
             Debug.LogError("More then one WorldController was initialised !");
@@ -32,9 +30,7 @@ public class WorldController : MonoBehaviour {
         // UPDATES THE WORLD HERE !
         // Whole world simulation...
 
-        if(this.startDelay > 0) this.startDelay -= Time.deltaTime; // Allow processes to finish up with creating world.
-
-        if(this.startDelay < 0) world.Update(Time.deltaTime); // Todo possibly pause, 2x, 4x etc. (world time speed)
+        world.Update(Time.deltaTime); // Todo possibly pause, 2x, 4x etc. (world time speed)
     }
 
 	public Tile GetTileAtWorldPosition(Vector3 position){
