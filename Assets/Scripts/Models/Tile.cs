@@ -6,11 +6,16 @@
 using System;
 using UnityEngine;
 
+// Serializing:
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+
 public enum TileType { Empty, Floor };
 
-public class Tile {
+public class Tile : IXmlSerializable {
 
-	TileType type = TileType.Empty;
+    TileType type = TileType.Empty;
 	Action<Tile> cbTileChanged;
 
 	public TileType Type {
@@ -94,5 +99,39 @@ public class Tile {
         }
 
         return ns;
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    ///
+    ///
+    ///                             SAVING & LOADING
+    ///
+    ///
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    public Tile() {
+        // Empty public constructor needed for XmlSerializer.
+    }
+
+    public XmlSchema GetSchema() {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer) {
+        writer.WriteAttributeString("X", this.X.ToString());
+        writer.WriteAttributeString("Y", this.Y.ToString());
+
+        writer.WriteAttributeString("Type", ((int)this.type).ToString());
+    }
+
+    public void ReadXml(XmlReader reader) {
+        this.X = int.Parse(reader.GetAttribute("X"));
+        this.Y = int.Parse(reader.GetAttribute("Y"));
+
+        this.Type = (TileType)int.Parse(reader.GetAttribute("Type"));
     }
 }

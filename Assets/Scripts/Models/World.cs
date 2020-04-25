@@ -2,7 +2,7 @@
  * License - OSL-3.0                      *
  * Created by JaxkDev (JaxkDev@gmail.com) *
  ******************************************/
-
+ 
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -32,16 +32,20 @@ public class World : IXmlSerializable {
     public JobQueue jobQueue;
 
 	public World(int width, int height){
-		this.Width = width;
-		this.Height = height;
+        this.SetupWorld(width, height);
+    }
 
-		this.tiles = new Tile[width, height];
+    void SetupWorld(int width, int height) {
+        this.Width = width;
+        this.Height = height;
+
+        this.tiles = new Tile[width, height];
         this.characters = new List<Character>();
         this.jobQueue = new JobQueue();
 
-		Stopwatch stopwatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
-		stopwatch.Start();
+        stopwatch.Start();
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 this.tiles[x, y] = new Tile(this, x, y);
@@ -54,8 +58,9 @@ public class World : IXmlSerializable {
 
         stopwatch.Stop();
 
-		UnityEngine.Debug.Log ("World created with " + width * height + " tiles in " + stopwatch.ElapsedMilliseconds + "ms");
-	}
+        UnityEngine.Debug.Log("World created with " + width * height + " tiles in " + stopwatch.ElapsedMilliseconds + "ms");
+
+    }
 
 
     public void Update(float deltaTime) {
@@ -203,7 +208,7 @@ public class World : IXmlSerializable {
 
 
     public World() {
-
+        // Empty public constructor needed for XmlSerializer.
     }
 
     public XmlSchema GetSchema() {
@@ -212,11 +217,47 @@ public class World : IXmlSerializable {
 
     public void WriteXml(XmlWriter writer) {
         // Save info here.
+        UnityEngine.Debug.Log("SaveXml");
         writer.WriteAttributeString("Width", this.Width.ToString());
         writer.WriteAttributeString("Height", this.Height.ToString());
+
+        /// -- Tiles --
+        writer.WriteStartElement("Tiles");
+        for(int x = 0; x < this.Width; x++) {
+            for(int y = 0; y < this.Height; y++) {
+                writer.WriteStartElement("Tile");
+                tiles[x, y].WriteXml(writer);
+                writer.WriteEndElement();
+            }
+        }
+        writer.WriteEndElement();
+        /// -----------
+        
+
+        /// -- Furniture --
+        
+        /// ---------------
+
     }
 
     public void ReadXml(XmlReader reader) {
         // Read info here.
+        UnityEngine.Debug.Log("ReadXml");
+
+        int width = int.Parse(reader.GetAttribute("Width"));
+        int height = int.Parse(reader.GetAttribute("Height"));
+
+        this.SetupWorld(width, height);
+
+        reader.ReadToDescendant("Tiles");
+        reader.ReadToDescendant("Tile");
+        while(reader.IsStartElement("Tile")) {
+            int x = int.Parse(reader.GetAttribute("X"));
+            int y = int.Parse(reader.GetAttribute("Y"));
+
+            this.tiles[x, y].ReadXml(reader);
+
+            reader.ReadToNextSibling("Tile");
+        }
     }
 }

@@ -20,7 +20,7 @@ public class CharacterSpriteController : MonoBehaviour {
 
         WorldController.Instance.world.RegisterCharacterCreatedCallback(this.OnCharacterCreated);
 
-        Character c = WorldController.Instance.world.CreateCharacter(WorldController.Instance.world.GetTileAt(WorldController.Instance.world.Width / 2, WorldController.Instance.world.Height / 2));
+        WorldController.Instance.world.CreateCharacter(WorldController.Instance.world.GetTileAt(WorldController.Instance.world.Width / 2, WorldController.Instance.world.Height / 2));
     }
 
     void LoadSprites() {
@@ -28,9 +28,9 @@ public class CharacterSpriteController : MonoBehaviour {
 
         //Load Resources:
         Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Characters/");
-        Debug.Log("Loading character sprites from resources...");
+        //Debug.Log("Loading character sprites from resources...");
         foreach(Sprite s in sprites) {
-            Debug.Log("'" + s.name + "' Loaded.");
+            //Debug.Log("'" + s.name + "' Loaded.");
             this.characterSprites[s.name] = s;
         }
     }

@@ -20,14 +20,11 @@ public class JobSpriteController : MonoBehaviour {
 	}
 
     void OnJobCreated(Job job) {
-        Debug.Log("Job created !");
-
 
         if(this.jobGameObjectMap.ContainsKey(job) == true) {
             //Job requeued.
             return;
         }
-
         
         GameObject job_go = new GameObject();
 
@@ -47,8 +44,6 @@ public class JobSpriteController : MonoBehaviour {
     }
 
     void OnJobEnded(Job job) {
-        Debug.Log("Job ended !");
-
         GameObject job_go = this.jobGameObjectMap[job];
 
         job.UnRegisterJobCancelledCallback(this.OnJobEnded);

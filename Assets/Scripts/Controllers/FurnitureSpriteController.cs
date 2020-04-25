@@ -26,9 +26,9 @@ public class FurnitureSpriteController: MonoBehaviour {
 
         //Load Resources:
         Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furniture/");
-        Debug.Log("Loading sprites from resources...");
+        //Debug.Log("Loading sprites from resources...");
         foreach(Sprite s in sprites) {
-            Debug.Log("'" + s.name + "' Loaded.");
+            //Debug.Log("'" + s.name + "' Loaded.");
             this.furnitureSprites[s.name] = s;
         }
     }

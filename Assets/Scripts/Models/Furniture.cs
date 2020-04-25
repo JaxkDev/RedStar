@@ -112,7 +112,7 @@ public class Furniture {
         return this.funcPositionValidation(t);
     }
 
-    public bool __IsValidPosition(Tile t) {
+    bool __IsValidPosition(Tile t) {
         // Called pre-build to check environment.
         if(t.Type != TileType.Floor) {
             //Cannot build on top of nothing !

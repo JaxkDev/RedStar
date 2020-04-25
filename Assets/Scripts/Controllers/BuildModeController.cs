@@ -30,8 +30,6 @@ public class BuildModeController : MonoBehaviour {
 
     public void DoPathfindingTest() {
         WorldController.Instance.world.SetupPathfinding();
-
-        Path_TileGraph tileGraph = new Path_TileGraph(WorldController.Instance.world);
     }
 
     public void DoBuild(Tile tile) {
@@ -56,8 +54,6 @@ public class BuildModeController : MonoBehaviour {
             });
 
             WorldController.Instance.world.jobQueue.Enqueue(j);
-
-            Debug.Log("New job added to job queue.");
         } else {
             tile.Type = this.buildModeTile;
         }

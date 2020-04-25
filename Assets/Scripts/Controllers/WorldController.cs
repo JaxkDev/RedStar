@@ -22,7 +22,8 @@ public class WorldController : MonoBehaviour {
 
         WorldController.Instance = this;
 
-        this.CreateEmptyWorld();
+        if(WorldController.loadWorld == false) this.CreateEmptyWorld();
+        else this.CreateWorldFromSave();
     }
 
     void Update() {
@@ -67,6 +68,8 @@ public class WorldController : MonoBehaviour {
         writer.Close();
 
         Debug.Log(writer.ToString());
+
+        PlayerPrefs.SetString("SaveGame00", writer.ToString());
     }
 
     public void LoadWorld() {
@@ -87,8 +90,11 @@ public class WorldController : MonoBehaviour {
 
         Debug.Log("create world from save");
 
-        //Generate World:
-        this.world = new World(100,100);
+        //Generate World from savedata:
+        XmlSerializer serializer = new XmlSerializer(typeof(World));
+        TextReader reader = new StringReader(PlayerPrefs.GetString("SaveGame00"));
+        this.world = (World)serializer.Deserialize(reader);
+        reader.Close();
 
         //Center the Camera.
         Camera.main.transform.position = new Vector3(this.world.Width / 2, this.world.Height / 2, Camera.main.transform.position.z);

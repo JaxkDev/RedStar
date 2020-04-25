@@ -17,7 +17,7 @@ public class TileSpriteController: MonoBehaviour {
 
 		this.tileGameObjectMap = new Dictionary<Tile, GameObject>();
 
-        //Generate tilemap:
+        //Generate tilemap (Will take a few ms !):
         for(int x = 0; x < WorldController.Instance.world.Width; x++) {
             for(int y = 0; y < WorldController.Instance.world.Height; y++) {
                 GameObject tile_go = new GameObject();
