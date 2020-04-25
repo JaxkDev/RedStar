@@ -20,7 +20,10 @@ public class CharacterSpriteController : MonoBehaviour {
 
         WorldController.Instance.world.RegisterCharacterCreatedCallback(this.OnCharacterCreated);
 
-        WorldController.Instance.world.CreateCharacter(WorldController.Instance.world.GetTileAt(WorldController.Instance.world.Width / 2, WorldController.Instance.world.Height / 2));
+        // Handle created characters before start eg loading from save.
+        foreach(Character c in WorldController.Instance.world.characters) {
+            this.OnCharacterCreated(c);
+        }
     }
 
     void LoadSprites() {

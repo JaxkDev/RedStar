@@ -22,8 +22,12 @@ public class WorldController : MonoBehaviour {
 
         WorldController.Instance = this;
 
-        if(WorldController.loadWorld == false) this.CreateEmptyWorld();
-        else this.CreateWorldFromSave();
+        if(WorldController.loadWorld == false) {
+            this.CreateEmptyWorld();
+        } else {
+            this.CreateWorldFromSave();
+            WorldController.loadWorld = false;
+        }
     }
 
     void Update() {
@@ -78,6 +82,12 @@ public class WorldController : MonoBehaviour {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+
+    
+    //////////////////
+
+    
+    
     void CreateEmptyWorld(){
         //Generate World:
         this.world = new World(100,100);

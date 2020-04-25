@@ -4,15 +4,18 @@
  ******************************************/
 
 using System;
-using UnityEngine;
-using System.Collections;
+
+// Serializing:
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 //Furniture - a object that6 has been 'constructed' / 'fitted'
 
-public class Furniture {
+public class Furniture : IXmlSerializable {
 
-	// REPRESENTS BASE TILE, BUT OBJECT MAY OCCUPY MULTIPLE TILES.
-	public Tile tile { get; protected set; }
+    // REPRESENTS BASE TILE, BUT OBJECT MAY OCCUPY MULTIPLE TILES.
+    public Tile tile { get; protected set; }
 
     // Type to be used by graphics to render sprite.
     public string furnitureType { get; protected set; }
@@ -34,10 +37,12 @@ public class Furniture {
 
     // TODO Larger options.
     // TODO Rotation.
-    protected Furniture() {}
+    public Furniture() {
+        // DO NOT USE, XML Serialize ONLY.
+    }
 
-	// Constructor for object factory.
-	static public Furniture CreatePrototype(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbour = false){
+    // Constructor for object factory.
+    static public Furniture CreatePrototype(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbour = false){
 		Furniture prototype = new Furniture();
 
 		prototype.furnitureType = furnitureType;
@@ -80,19 +85,19 @@ public class Furniture {
             int y = tile.Y;
 
             t = tile.world.GetTileAt(x, y + 1);
-            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            if(t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.furnitureType == instance.furnitureType) {
                 t.furniture.cbOnChanged(t.furniture);
             }
             t = tile.world.GetTileAt(x + 1, y);
-            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            if(t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.furnitureType == instance.furnitureType) {
                 t.furniture.cbOnChanged(t.furniture);
             }
             t = tile.world.GetTileAt(x, y - 1);
-            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            if(t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.furnitureType == instance.furnitureType) {
                 t.furniture.cbOnChanged(t.furniture);
             }
             t = tile.world.GetTileAt(x - 1, y);
-            if(t != null && t.furniture != null && t.furniture.furnitureType == instance.furnitureType) {
+            if(t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.furnitureType == instance.furnitureType) {
                 t.furniture.cbOnChanged(t.furniture);
             }
         }
@@ -124,5 +129,32 @@ public class Furniture {
         }
 
         return true;
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    ///
+    ///
+    ///                             SAVING & LOADING
+    ///
+    ///
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    public XmlSchema GetSchema() {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer) {
+        writer.WriteAttributeString("X", this.tile.X.ToString());
+        writer.WriteAttributeString("Y", this.tile.Y.ToString());
+        writer.WriteAttributeString("FurnitureType", this.furnitureType);
+        writer.WriteAttributeString("MovementCost", this.movementCost.ToString());
+    }
+
+    public void ReadXml(XmlReader reader) {
+        this.movementCost = int.Parse(reader.GetAttribute("MovementCost"));
     }
 }

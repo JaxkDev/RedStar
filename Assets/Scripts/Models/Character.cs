@@ -6,7 +6,12 @@
 using System;
 using UnityEngine;
 
-public class Character {
+// Serializing:
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+
+public class Character : IXmlSerializable {
     public float X {
         get {
             return Mathf.Lerp(this.currTile.X, this.nextTile.X, movementPercentage);
@@ -31,6 +36,10 @@ public class Character {
     Action<Character> cbCharacterChanged;
 
     Job currJob;
+
+    public Character() {
+        // DO NOT USE, XML Serialize ONLY.
+    }
 
     public Character(Tile currentTile) {
         this.currTile = this.destTile = this.nextTile = currentTile;
@@ -132,5 +141,30 @@ public class Character {
         this.nextTile = this.destTile = this.currTile;
         this.pathAStar = null;
         this.currJob = null;
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    ///
+    ///
+    ///                             SAVING & LOADING
+    ///
+    ///
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    public XmlSchema GetSchema() {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer) {
+        writer.WriteAttributeString("X", Mathf.Floor(this.X).ToString());
+        writer.WriteAttributeString("Y", Mathf.Floor(this.Y).ToString());
+    }
+
+    public void ReadXml(XmlReader reader) {
+        
     }
 }

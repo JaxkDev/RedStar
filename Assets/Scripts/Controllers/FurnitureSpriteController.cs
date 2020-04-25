@@ -19,6 +19,11 @@ public class FurnitureSpriteController: MonoBehaviour {
         this.furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
 
         WorldController.Instance.world.RegisterFurnitureCreatedCallback(this.OnFurnitureCreated);
+
+        // Handle created furniture before start eg loading from save.
+        foreach(Furniture furn in WorldController.Instance.world.furnitures) {
+            this.OnFurnitureCreated(furn);
+        }
     }
 
     void LoadSprites() {

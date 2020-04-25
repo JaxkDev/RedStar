@@ -114,7 +114,7 @@ public class Tile : IXmlSerializable {
 
 
     public Tile() {
-        // Empty public constructor needed for XmlSerializer.
+        // DO NOT USE, XML Serialize ONLY.
     }
 
     public XmlSchema GetSchema() {
@@ -129,8 +129,8 @@ public class Tile : IXmlSerializable {
     }
 
     public void ReadXml(XmlReader reader) {
-        this.X = int.Parse(reader.GetAttribute("X"));
-        this.Y = int.Parse(reader.GetAttribute("Y"));
+        //this.X = int.Parse(reader.GetAttribute("X"));
+        //this.Y = int.Parse(reader.GetAttribute("Y"));
 
         this.Type = (TileType)int.Parse(reader.GetAttribute("Type"));
     }
