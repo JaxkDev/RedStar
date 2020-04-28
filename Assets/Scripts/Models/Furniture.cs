@@ -4,6 +4,7 @@
  ******************************************/
 
 using System;
+using System.Collections.Generic;
 
 // Serializing:
 using System.Xml;
@@ -13,6 +14,14 @@ using System.Xml.Serialization;
 //Furniture - a object that6 has been 'constructed' / 'fitted'
 
 public class Furniture : IXmlSerializable {
+
+    public Dictionary<string, object> furnParameters;
+    public Action<Furniture, float> updateActions;
+
+    public void Update(float deltaTime) {
+        if(this.updateActions != null) this.updateActions(this, deltaTime);
+    }
+
 
     // REPRESENTS BASE TILE, BUT OBJECT MAY OCCUPY MULTIPLE TILES.
     public Tile tile { get; protected set; }
@@ -39,22 +48,36 @@ public class Furniture : IXmlSerializable {
     // TODO Rotation.
     public Furniture() {
         // DO NOT USE, XML Serialize ONLY.
+        this.furnParameters = new Dictionary<string, object>();
     }
 
-    // Constructor for object factory.
-    static public Furniture CreatePrototype(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbour = false){
-		Furniture prototype = new Furniture();
+    // Copy Constructor
+    protected Furniture( Furniture other) {
+        this.furnitureType = other.furnitureType;
+        this.movementCost = other.movementCost;
+        this.width = other.width;
+        this.height = other.height;
+        this.linksToNeighbour = other.linksToNeighbour;
+        this.funcPositionValidation = other.__IsValidPosition;
 
-		prototype.furnitureType = furnitureType;
-		prototype.movementCost = movementCost;
-		prototype.width = width;
-		prototype.height = height;
-        prototype.linksToNeighbour = linksToNeighbour;
+        this.furnParameters = new Dictionary<string, object>(other.furnParameters);
+        if(other.updateActions != null) this.updateActions = (Action<Furniture, float>)other.updateActions.Clone();
+    }
 
-        prototype.funcPositionValidation = prototype.__IsValidPosition;
+    virtual public Furniture Clone() {
+        return new Furniture(this);
+    }
 
-		return prototype;
-	}
+    // Constructor for furniture factory.
+    public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbour = false){
+		this.furnitureType = furnitureType;
+        this.movementCost = movementCost;
+        this.width = width;
+        this.height = height;
+        this.linksToNeighbour = linksToNeighbour;
+        this.funcPositionValidation = this.__IsValidPosition;
+        this.furnParameters = new Dictionary<string, object>();
+    }
 
 	static public Furniture PlaceInstance(Furniture proto, Tile tile){
 
@@ -63,15 +86,8 @@ public class Furniture : IXmlSerializable {
             return null;
         }
 
-		Furniture instance = new Furniture();
-
-		instance.furnitureType = proto.furnitureType;
-		instance.movementCost = proto.movementCost;
-		instance.width = proto.width;
-		instance.height = proto.height;
-        instance.linksToNeighbour = proto.linksToNeighbour;
-
-		instance.tile = tile;
+        Furniture instance = proto.Clone();
+        instance.tile = tile;
 
         //TODO Assumes 1x1 size.
         if(tile.PlaceObject(instance) == false) {

@@ -94,13 +94,24 @@ public class World: IXmlSerializable {
     void CreateFurniturePrototypes() {
         this.furniturePrototypes = new Dictionary<string, Furniture>();
 
-        this.furniturePrototypes.Add("Wall", Furniture.CreatePrototype(
-            "Wall",
-            0,
+        this.furniturePrototypes.Add("Wall", new Furniture(
+            "Wall", // Name
+            0,      // Impassible
+            1,      // Width
+            1,      // Height
+            true    // Links to neighbour.
+        ));
+
+        this.furniturePrototypes.Add("Door", new Furniture(
+            "Door",
             1,
             1,
-            true //Links to neighbour.
-            ));
+            1,
+            true // hmm
+        ));
+
+        this.furniturePrototypes["Door"].furnParameters["OpenPercent"] = 0f;
+        this.furniturePrototypes["Door"].updateActions += FurnitureActions.Door_UpdateAction;
     }
 
     public Furniture PlaceFurniture(string furnitureType, Tile tile) {
