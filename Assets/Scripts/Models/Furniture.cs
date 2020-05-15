@@ -15,7 +15,7 @@ using System.Xml.Serialization;
 
 public class Furniture : IXmlSerializable {
 
-    public Dictionary<string, object> furnParameters;
+    public Dictionary<string, float> furnParameters;
     public Action<Furniture, float> updateActions;
 
     public void Update(float deltaTime) {
@@ -48,7 +48,7 @@ public class Furniture : IXmlSerializable {
     // TODO Rotation.
     public Furniture() {
         // DO NOT USE, XML Serialize ONLY.
-        this.furnParameters = new Dictionary<string, object>();
+        this.furnParameters = new Dictionary<string, float>();
     }
 
     // Copy Constructor
@@ -60,7 +60,7 @@ public class Furniture : IXmlSerializable {
         this.linksToNeighbour = other.linksToNeighbour;
         this.funcPositionValidation = other.__IsValidPosition;
 
-        this.furnParameters = new Dictionary<string, object>(other.furnParameters);
+        this.furnParameters = new Dictionary<string, float>(other.furnParameters);
         if(other.updateActions != null) this.updateActions = (Action<Furniture, float>)other.updateActions.Clone();
     }
 
@@ -76,7 +76,7 @@ public class Furniture : IXmlSerializable {
         this.height = height;
         this.linksToNeighbour = linksToNeighbour;
         this.funcPositionValidation = this.__IsValidPosition;
-        this.furnParameters = new Dictionary<string, object>();
+        this.furnParameters = new Dictionary<string, float>();
     }
 
 	static public Furniture PlaceInstance(Furniture proto, Tile tile){
@@ -167,10 +167,24 @@ public class Furniture : IXmlSerializable {
         writer.WriteAttributeString("X", this.tile.X.ToString());
         writer.WriteAttributeString("Y", this.tile.Y.ToString());
         writer.WriteAttributeString("FurnitureType", this.furnitureType);
-        writer.WriteAttributeString("MovementCost", this.movementCost.ToString());
+        //writer.WriteAttributeString("MovementCost", this.movementCost.ToString());
+
+        foreach(string k in this.furnParameters.Keys) {
+            writer.WriteStartElement("Param");
+            writer.WriteAttributeString("name", k);
+            writer.WriteAttributeString("value", this.furnParameters[k].ToString());
+            writer.WriteEndElement();
+        }
     }
 
     public void ReadXml(XmlReader reader) {
-        this.movementCost = int.Parse(reader.GetAttribute("MovementCost"));
+        //this.movementCost = int.Parse(reader.GetAttribute("MovementCost"));
+        if(reader.ReadToDescendant("Param")) {
+            do {
+                string k = reader.GetAttribute("name");
+                float v = float.Parse(reader.GetAttribute("value"));
+                this.furnParameters[k] = v;
+            } while(reader.ReadToNextSibling("Param"));
+        }
     }
 }

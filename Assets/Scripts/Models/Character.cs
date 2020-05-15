@@ -84,16 +84,26 @@ public class Character : IXmlSerializable {
                     //Debug.LogError("No path to destination !");
 
                     this.AbandonJob();
+                    this.pathAStar = null;
                     return;
                 }
+
+                this.nextTile = this.pathAStar.GetNextTile(); //Ignore first tile (current)
             }
 
             this.nextTile = this.pathAStar.GetNextTile();
+        }
 
+        if(nextTile.movementCost == 0) {
+            Debug.LogError("FIXME, Character tried to enter an unwalkable tile.");
+            //Map updated after generating path, TODO Handle.
+            nextTile = null;
+            this.pathAStar = null;
+            return;
         }
 
         float distToTravel = Mathf.Sqrt(Mathf.Pow(this.currTile.X - this.nextTile.X, 2) + Mathf.Pow(this.currTile.Y - this.nextTile.Y, 2));
-        float distThisFrame = this.movementSpeed * deltaTime;
+        float distThisFrame = this.movementSpeed / nextTile.movementCost * deltaTime;
         float percThisFrame = distThisFrame / distToTravel; //MHM.
 
 
