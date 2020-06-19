@@ -37,10 +37,6 @@ public class Character : IXmlSerializable {
 
     Job currJob;
 
-    public Character() {
-        // DO NOT USE, XML Serialize ONLY.
-    }
-
     public Character(Tile currentTile) {
         this.currTile = this.destTile = this.nextTile = currentTile;
     }
@@ -77,6 +73,10 @@ public class Character : IXmlSerializable {
     void Update_Move(float deltaTime) {
         if(this.currTile == this.destTile) return;
 
+        // currTile,
+        // nextTile,
+        // destTile
+
         if(this.nextTile == null || this.nextTile == this.currTile) {
             if(this.pathAStar == null || this.pathAStar.Length() == 0) {
                 this.pathAStar = new Path_AStar(WorldController.Instance.world, this.currTile, this.destTile);
@@ -94,11 +94,15 @@ public class Character : IXmlSerializable {
             this.nextTile = this.pathAStar.GetNextTile();
         }
 
-        if(nextTile.movementCost == 0) {
+        if(nextTile.IsEnterable() == Enterability.Never) {
             Debug.LogError("FIXME, Character tried to enter an unwalkable tile.");
             //Map updated after generating path, TODO Handle.
-            nextTile = null;
+            this.nextTile = null;
             this.pathAStar = null;
+            return;
+        } else if (nextTile.IsEnterable() == Enterability.Soon) {
+            // Cant enter right now but soon, probably door.
+            // DONT ABORT PATH, WAIT.
             return;
         }
 
@@ -157,13 +161,14 @@ public class Character : IXmlSerializable {
 
     ////////////////////////////////////////////////////////////////////////////////////
     ///
-    ///
     ///                             SAVING & LOADING
-    ///
     ///
     ////////////////////////////////////////////////////////////////////////////////////
 
-
+    
+    public Character() {
+        // DO NOT USE, XML Serialize ONLY.
+    }
 
     public XmlSchema GetSchema() {
         return null;

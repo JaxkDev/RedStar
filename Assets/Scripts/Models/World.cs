@@ -100,7 +100,7 @@ public class World: IXmlSerializable {
 
         this.furniturePrototypes.Add("Wall", new Furniture(
             "Wall", // Name
-            0,      // Impassible
+            0,      // Impassible (movement cost)
             1,      // Width
             1,      // Height
             true    // Links to neighbour.
@@ -108,14 +108,16 @@ public class World: IXmlSerializable {
 
         this.furniturePrototypes.Add("Door", new Furniture(
             "Door",
-            50,
+            1,
             1,
             1,
             false // hmm
         ));
 
         this.furniturePrototypes["Door"].furnParameters["OpenPercent"] = 0f;
+        this.furniturePrototypes["Door"].furnParameters["State"] = 0f;
         this.furniturePrototypes["Door"].updateActions += FurnitureActions.Door_UpdateAction;
+        this.furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
     }
 
     public Furniture PlaceFurniture(string furnitureType, Tile tile) {
@@ -224,9 +226,7 @@ public class World: IXmlSerializable {
 
     ////////////////////////////////////////////////////////////////////////////////////
     ///
-    ///
     ///                             SAVING & LOADING
-    ///
     ///
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -249,6 +249,7 @@ public class World: IXmlSerializable {
         writer.WriteStartElement("Tiles");
         for(int x = 0; x < this.Width; x++) {
             for(int y = 0; y < this.Height; y++) {
+                if(tiles[x, y].Type == TileType.Empty) continue;
                 writer.WriteStartElement("Tile");
                 tiles[x, y].WriteXml(writer);
                 writer.WriteEndElement();

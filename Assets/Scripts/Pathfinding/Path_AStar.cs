@@ -61,8 +61,8 @@ public class Path_AStar {
             }
 
             closedSet.Add(currentNode);
-            foreach(Path_Edge<Tile> neighbour in currentNode.edges) {
-                Path_Node<Tile> neighbourNode = neighbour.node;
+            foreach(Path_Edge<Tile> neighbourEdge in currentNode.edges) {
+                Path_Node<Tile> neighbourNode = neighbourEdge.node;
                 if(closedSet.Contains(neighbourNode) == true) continue; //Already checked this neighbour.
 
                 float movementCost = dist_between(currentNode, neighbourNode) * neighbourNode.data.movementCost;
@@ -77,10 +77,10 @@ public class Path_AStar {
 
                 if(openSet.Contains(neighbourNode) == false) {
                     openSet.Enqueue(neighbourNode, f_score[neighbourNode]);
+                } else {
+                    openSet.UpdatePriority(neighbourNode, f_score[neighbourNode]);
                 }
             }
-
-
         }
 
         // Gone through entire set, couldn't find a path !

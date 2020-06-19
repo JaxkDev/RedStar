@@ -18,6 +18,8 @@ public class Furniture : IXmlSerializable {
     public Dictionary<string, float> furnParameters;
     public Action<Furniture, float> updateActions;
 
+    public Func<Furniture, Enterability> IsEnterable;
+
     public void Update(float deltaTime) {
         if(this.updateActions != null) this.updateActions(this, deltaTime);
     }
@@ -62,6 +64,8 @@ public class Furniture : IXmlSerializable {
 
         this.furnParameters = new Dictionary<string, float>(other.furnParameters);
         if(other.updateActions != null) this.updateActions = (Action<Furniture, float>)other.updateActions.Clone();
+
+        this.IsEnterable = other.IsEnterable;
     }
 
     virtual public Furniture Clone() {
@@ -151,9 +155,7 @@ public class Furniture : IXmlSerializable {
 
     ////////////////////////////////////////////////////////////////////////////////////
     ///
-    ///
     ///                             SAVING & LOADING
-    ///
     ///
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -167,7 +169,6 @@ public class Furniture : IXmlSerializable {
         writer.WriteAttributeString("X", this.tile.X.ToString());
         writer.WriteAttributeString("Y", this.tile.Y.ToString());
         writer.WriteAttributeString("FurnitureType", this.furnitureType);
-        //writer.WriteAttributeString("MovementCost", this.movementCost.ToString());
 
         foreach(string k in this.furnParameters.Keys) {
             writer.WriteStartElement("Param");
@@ -178,7 +179,6 @@ public class Furniture : IXmlSerializable {
     }
 
     public void ReadXml(XmlReader reader) {
-        //this.movementCost = int.Parse(reader.GetAttribute("MovementCost"));
         if(reader.ReadToDescendant("Param")) {
             do {
                 string k = reader.GetAttribute("name");

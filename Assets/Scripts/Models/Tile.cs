@@ -13,6 +13,8 @@ using System.Xml.Serialization;
 
 public enum TileType { Empty, Floor };
 
+public enum Enterability {  Yes, Never, Soon };
+
 public class Tile : IXmlSerializable {
 
     TileType type = TileType.Empty;
@@ -44,7 +46,7 @@ public class Tile : IXmlSerializable {
         get {
             if(this.type == TileType.Empty) return 0;
             if(this.furniture == null) return 1; //Possibly tile defaults ?
-            return 1 * this.furniture.movementCost;
+            return this.furniture.movementCost;
         }
     }
 
@@ -81,8 +83,7 @@ public class Tile : IXmlSerializable {
     public bool IsNeighbour(Tile tile, bool checkDiagonal = false) {
         return Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || (checkDiagonal && (Mathf.Abs(this.X - tile.X) == 1 && Mathf.Abs(this.Y - tile.Y) == 1));
     }
-
-    //TODO CACHE.
+    
     public Tile[] GetNeighbours(bool checkDiagonal = false) {
         Tile[] ns = new Tile[checkDiagonal ? 8 : 4]; //N,E,S,W , NE,SE,SW,NW
 
@@ -101,13 +102,24 @@ public class Tile : IXmlSerializable {
         return ns;
     }
 
+    public Enterability IsEnterable() {
+        if(this.movementCost == 0) {
+            return Enterability.Never;
+        }
+        
+        // Check furniture for enterability.
+        if(this.furniture != null && this.furniture.IsEnterable != null) {
+            return this.furniture.IsEnterable(this.furniture);
+        }
+
+        return Enterability.Yes;
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////
     ///
-    ///
     ///                             SAVING & LOADING
-    ///
     ///
     ////////////////////////////////////////////////////////////////////////////////////
 
