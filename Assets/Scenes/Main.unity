@@ -1246,7 +1246,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &876354421
 Transform:
   m_ObjectHideFlags: 0
@@ -1275,6 +1275,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   discordId: 704389283145973835
   online: 0
+  players: 1
+  startTime: 0
 --- !u!1 &905027533
 GameObject:
   m_ObjectHideFlags: 0

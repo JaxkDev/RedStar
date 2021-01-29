@@ -9,32 +9,58 @@ using UnityEngine;
 public class DiscordController : MonoBehaviour {
 
     public long discordId;
-    public bool online = true;
-
+    public bool online = false;
+    public int players = 1;
+    public long startTime;
     Discord.Discord discord;
 
     // Use this for initialization
     void Start() {
-        this.discord = new Discord.Discord(this.discordId, (System.UInt64)Discord.CreateFlags.Default);
+        World world = WorldController.Instance.world;
+        world.RegisterCharacterCreatedCallback(this.characterCreated);
+        try{
+            this.discord = new Discord.Discord(this.discordId, (System.UInt64)Discord.CreateFlags.NoRequireDiscord);
+        } catch(Discord.ResultException result){
+            Debug.LogError("Failed to initialise discord, "+result.ToString());
+            return;
+        }
+        this.online = true;
+        this.startTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         var activityManager = discord.GetActivityManager();
-        var activity = new Discord.Activity {
-            State = "Building My Game In C#",
-            Details = "No looking !",
+        activityManager.UpdateActivity(this.generateActivity(), (res) => {
+            if(res == Discord.Result.Ok) {
+                Debug.Log("Updated discord activity.");
+            } else {
+                this.StopDiscord();
+                Debug.LogError("Discord failed to update activity, " + res);
+            }
+        });
+    }
+
+    Discord.Activity generateActivity() {
+        return new Discord.Activity {
+            Details = "In galaxy: TestGalaxy",
+            State = this.players+" Lifeform"+(this.players == 1 ? "" : "s")+" present.",
             Timestamps =
             {
-                Start = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds,
+                Start = this.startTime,
             },
             Assets =
             {
                 LargeImage = "red-star", // Larger Image Asset Key
             },
-            Instance = true,
+            Instance = false,
         };
-        activityManager.UpdateActivity(activity, (res) => {
+    }
+    void characterCreated(Character character) {
+        if(!this.online) return;
+        Debug.Log("Character created updating discord.");
+        this.discord.GetActivityManager().UpdateActivity(this.generateActivity(), (res) => {
             if(res == Discord.Result.Ok) {
                 Debug.Log("Updated discord activity.");
             } else {
                 Debug.LogError("Discord failed to update activity, " + res);
+                this.StopDiscord();
             }
         });
     }
@@ -44,16 +70,21 @@ public class DiscordController : MonoBehaviour {
         try {
             if(this.online) this.discord.RunCallbacks();
         } catch(Discord.ResultException e) {
-            if(this.online) {
-                this.online = false;
-                Debug.LogError("Discord has gone offline.");
-                Debug.LogError(e);
-            }
+            this.StopDiscord();
+            Debug.LogError(e);
         }
     }
 
 
     void OnApplicationQuit() {
-        if(this.online) this.discord.GetActivityManager().ClearActivity((res) => {});
+        this.StopDiscord();
+    }
+
+    void StopDiscord() {
+        if(this.online){
+            this.discord.Dispose();
+            this.online = false;
+            Debug.Log("Discord activity stopped/cleared.");
+        }
     }
 }
