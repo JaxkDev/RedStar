@@ -31,7 +31,7 @@ public class DiscordController : MonoBehaviour {
             if(res == Discord.Result.Ok) {
                 Debug.Log("Updated discord activity.");
             } else {
-                this.StopDiscord();
+                this.online = false;
                 Debug.LogError("Discord failed to update activity, " + res);
             }
         });
