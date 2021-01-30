@@ -24,6 +24,10 @@ public static class FurnitureActions {
         if(furn.furnParameters["OpenPercent"] == 1) {
             furn.furnParameters["State"] = 0; //IF SET TO 2, Door opens and closes constantly while player walking through.
         }
+
+        if(furn.cbOnChanged != null){
+            furn.cbOnChanged(furn);
+        }
     }
 
     public static Enterability Door_IsEnterable(Furniture furn) {

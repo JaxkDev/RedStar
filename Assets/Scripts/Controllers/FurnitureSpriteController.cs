@@ -75,11 +75,29 @@ public class FurnitureSpriteController: MonoBehaviour {
     }
 
     public Sprite GetSpriteForFurniture(Furniture furn) {
+        string spriteName = furn.furnitureType + "_";
+
         if(furn.linksToNeighbour == false) {
+            //Temp, Check door graphics here. (FIXME)
+            if(furn.furnitureType == "Door"){
+                float percent = furn.furnParameters["OpenPercent"];
+                if(percent < 0.1f){
+                    //Closed state.
+                    spriteName = "Door_";
+                } else if(percent < 0.5f){
+                    //Mostly closed state.
+                    spriteName = "Door_1";
+                } else if(percent < 0.9f){
+                    //Mostly open state.
+                    spriteName = "Door_2";
+                } else {
+                    //Open state.
+                    spriteName = "Door_3";
+                }
+                return this.furnitureSprites[spriteName];
+            }
             return this.furnitureSprites[furn.furnitureType];
         }
-
-        string spriteName = furn.furnitureType + "_";
 
         // NEIGHBOUR LOGIC. (TODO CHANGE WHOLE SYSTEM TO USE SUB CLASSES FOR INSTANCE CHECKING EG WALL CONNECT TO WALL BUT NOT TABLE)
         Tile t;

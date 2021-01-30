@@ -42,7 +42,7 @@ public class Furniture : IXmlSerializable {
     // Hints to visual layer that it may need alteration because of neighbours.
     public bool linksToNeighbour { get; protected set; }
 
-    Action<Furniture> cbOnChanged;
+    public Action<Furniture> cbOnChanged;
 
     Func<Tile, bool> funcPositionValidation;
 
