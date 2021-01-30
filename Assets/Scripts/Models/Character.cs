@@ -65,9 +65,7 @@ public class Character : IXmlSerializable {
             if(this.currJob != null) {
                 this.currJob.DoWork(deltaTime);
             }
-            return;
         }
-        return;
     }
 
     void Update_Move(float deltaTime) {

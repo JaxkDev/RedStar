@@ -47,6 +47,20 @@ public class FurnitureSpriteController: MonoBehaviour {
         furn_go.transform.position = new Vector3(furn.tile.X, furn.tile.Y, 0);
         furn_go.transform.SetParent(this.transform, true);
 
+        if(furn.furnitureType == "Door"){
+            //Check door rotation due to neighbour connections
+            //Default West-East so only need to check North-South links.
+            //FIXME Hardcoded...
+            World world = WorldController.Instance.world;
+            Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y+1);
+            Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y-1);
+            if(northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
+                northTile.furniture.furnitureType == "Wall" && southTile.furniture.furnitureType == "Wall"){
+                furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+                furn_go.transform.Translate(1f, 0, 0, Space.World); //Due to bottom-left anchor point
+            }
+        }
+
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = this.GetSpriteForFurniture(furn);
         sr.sortingLayerName = "Furniture";
