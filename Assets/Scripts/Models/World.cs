@@ -60,7 +60,7 @@ public class World: IXmlSerializable {
             for(int y = 0; y < height; y++) {
                 this.tiles[x, y] = new Tile(this, x, y);
                 this.tiles[x, y].RegisterTileTypeChangeCallBack(this.OnTileChanged);
-                this.tiles[x, y].room = this.GetSpaceRoom(); // Initial room is space
+                this.tiles[x, y].room = this.GetDefaultRoom(); // Initial room is space
             }
         }
 
@@ -87,18 +87,25 @@ public class World: IXmlSerializable {
         }
     }
 
-    public Room GetSpaceRoom() {
+    public Room GetDefaultRoom() {
         return this.rooms[0];
     }
 
+    public void AddRoom(Room r) {
+        this.rooms.Add(r);
+    }
+
     public void DeleteRoom(Room r) {
-        if(r == this.GetSpaceRoom()) {
+        if(r == this.GetDefaultRoom()) {
             UnityEngine.Debug.LogError("Tried to delete the space room.");
             return;
         }
 
-        r.UnAssignAllTiles();
+        // Remove room from internal list.
         this.rooms.Remove(r);
+
+        // All tiles inside room are now in the default space room.
+        r.UnAssignAllTiles();
     }
 
     public Character CreateCharacter(Tile tile) {

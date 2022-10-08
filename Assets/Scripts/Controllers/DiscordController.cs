@@ -3,6 +3,8 @@
  * Created by JaxkDev (JaxkDev@gmail.com) *
  ******************************************/
 
+/*
+
 using System;
 using UnityEngine;
 
@@ -88,3 +90,5 @@ public class DiscordController : MonoBehaviour {
         }
     }
 }
+
+*/
