@@ -18,6 +18,7 @@ public class World: IXmlSerializable {
 
     public List<Character> characters { get; protected set; }
     public List<Furniture> furnitures { get; protected set; }
+    public List<Room>      rooms      { get; protected set; }
 
     public Path_TileGraph tileGraph;
 
@@ -48,6 +49,8 @@ public class World: IXmlSerializable {
         this.tiles = new Tile[width, height];
         this.characters = new List<Character>();
         this.furnitures = new List<Furniture>();
+        this.rooms = new List<Room>();
+        this.rooms.Add(new Room()); // Space
         this.jobQueue = new JobQueue();
 
         Stopwatch stopwatch = new Stopwatch();
@@ -57,6 +60,7 @@ public class World: IXmlSerializable {
             for(int y = 0; y < height; y++) {
                 this.tiles[x, y] = new Tile(this, x, y);
                 this.tiles[x, y].RegisterTileTypeChangeCallBack(this.OnTileChanged);
+                this.tiles[x, y].room = this.GetSpaceRoom(); // Initial room is space
             }
         }
 
@@ -68,7 +72,6 @@ public class World: IXmlSerializable {
         UnityEngine.Debug.Log("World created with " + width * height + " tiles in " + stopwatch.ElapsedMilliseconds + "ms");
 
     }
-
 
     public void Update(float deltaTime) {
 
@@ -84,7 +87,19 @@ public class World: IXmlSerializable {
         }
     }
 
+    public Room GetSpaceRoom() {
+        return this.rooms[0];
+    }
 
+    public void DeleteRoom(Room r) {
+        if(r == this.GetSpaceRoom()) {
+            UnityEngine.Debug.LogError("Tried to delete the space room.");
+            return;
+        }
+
+        r.UnAssignAllTiles();
+        this.rooms.Remove(r);
+    }
 
     public Character CreateCharacter(Tile tile) {
         Character c = new Character(tile);
@@ -103,7 +118,8 @@ public class World: IXmlSerializable {
             0,      // Impassible (movement cost)
             1,      // Width
             1,      // Height
-            true    // Links to neighbour.
+            true,   // Links to neighbour.
+            true    // Encloses rooms
         ));
 
         this.furniturePrototypes.Add("Door", new Furniture(
@@ -111,7 +127,8 @@ public class World: IXmlSerializable {
             1,
             1,
             1,
-            false // hmm
+            false, // hmm
+            true
         ));
 
         this.furniturePrototypes["Door"].furnParameters["OpenPercent"] = 0f;
@@ -137,9 +154,19 @@ public class World: IXmlSerializable {
 
         this.furnitures.Add(obj); // TODO Remember to remove when destruct implemented.
 
+        // Do we need to recalculate rooms ?
+        if(obj.roomEnclosure) {
+            Room.DoRoomFloodFill(obj);
+        }
+
         if(this.cbFurnitureCreated != null) {
             this.cbFurnitureCreated(obj);
-            this.InvalidateTileGraph();
+
+            if (obj.movementCost != 1) {
+                // Since tile is not exactly 1 (no change to default tile cost) the cost changes.
+                // So reset pathfinding graph.
+                this.InvalidateTileGraph(); // Reset the pathfinding graph.
+            }
         }
 
         return obj;

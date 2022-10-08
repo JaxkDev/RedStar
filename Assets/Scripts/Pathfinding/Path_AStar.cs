@@ -85,7 +85,7 @@ public class Path_AStar {
 
         // Gone through entire set, couldn't find a path !
         // Todo Fail.
-        // throw new System.Exception("Woah couldnt find a path to that point !");
+        throw new System.Exception("Woah couldnt find a path to that point !");
     }
 
     float heuristic_cost_estimate(Path_Node<Tile> a, Path_Node<Tile> b) {

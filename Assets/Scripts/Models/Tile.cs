@@ -35,6 +35,8 @@ public class Tile : IXmlSerializable {
     public Inventory inventory { get; protected set; }
 	public Furniture furniture { get; protected set; }
 
+    public Room room;
+
     public Job pendingFurnitureJob;
 
 	public World world { get; protected set; }

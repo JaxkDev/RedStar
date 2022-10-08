@@ -11,7 +11,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-//Furniture - a object that6 has been 'constructed' / 'fitted'
+//Furniture - a object that has been 'constructed' / 'fitted'
 
 public class Furniture : IXmlSerializable {
 
@@ -35,9 +35,12 @@ public class Furniture : IXmlSerializable {
 	// IF 0 then entity's cannot pass through.
 	public float movementCost { get; protected set; }
 
+    //Does this piece of furniture seperate rooms (eg walls/doors)?
+    public bool roomEnclosure { get; protected set; }
+
 	// The dimensions of the object in terms of code NOT visually.
-	int width = 1;
-	int height = 1;
+	int width;
+	int height;
 
     // Hints to visual layer that it may need alteration because of neighbours.
     public bool linksToNeighbour { get; protected set; }
@@ -73,9 +76,10 @@ public class Furniture : IXmlSerializable {
     }
 
     // Constructor for furniture factory.
-    public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbour = false){
+    public Furniture(string furnitureType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbour = false, bool roomEnclosure = false){
 		this.furnitureType = furnitureType;
         this.movementCost = movementCost;
+        this.roomEnclosure = roomEnclosure;
         this.width = width;
         this.height = height;
         this.linksToNeighbour = linksToNeighbour;

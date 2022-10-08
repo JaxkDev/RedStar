@@ -50,6 +50,7 @@ public class Character : IXmlSerializable {
 
     void Update_DoJob(float deltaTime) {
         if(this.currJob == null) {
+            //Fetch new Job, TODO PRIORITY SYS HERE.
             Job newJob = currTile.world.jobQueue.Dequeue();
 
             if(newJob != null) {
