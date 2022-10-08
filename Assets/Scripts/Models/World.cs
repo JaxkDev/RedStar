@@ -138,9 +138,9 @@ public class World: IXmlSerializable {
             true
         ));
 
-        this.furniturePrototypes["Door"].furnParameters["OpenPercent"] = 0f;
-        this.furniturePrototypes["Door"].furnParameters["State"] = 0f;
-        this.furniturePrototypes["Door"].updateActions += FurnitureActions.Door_UpdateAction;
+        this.furniturePrototypes["Door"].SetParameter("OpenPercent", 0f);
+        this.furniturePrototypes["Door"].SetParameter("State", 0f);
+        this.furniturePrototypes["Door"].RegisterUpdateAction(FurnitureActions.Door_UpdateAction);
         this.furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
     }
 

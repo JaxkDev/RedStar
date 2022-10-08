@@ -94,7 +94,7 @@ public class FurnitureSpriteController: MonoBehaviour {
         if(furn.linksToNeighbour == false) {
             //Temp, Check door graphics here. (FIXME)
             if(furn.furnitureType == "Door"){
-                float percent = furn.furnParameters["OpenPercent"];
+                float percent = furn.GetParameter("OpenPercent");
                 if(percent < 0.1f){
                     //Closed state.
                     spriteName = "Door_";

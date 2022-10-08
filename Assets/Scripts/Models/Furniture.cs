@@ -15,8 +15,15 @@ using System.Xml.Serialization;
 
 public class Furniture : IXmlSerializable {
 
-    public Dictionary<string, float> furnParameters;
-    public Action<Furniture, float> updateActions;
+    /// <summary>
+    /// Custom parameters (data) for a particular piece of furniture.
+    /// </summary>
+    protected Dictionary<string, float> furnParameters;
+
+    /// <summary>
+    /// These actions are called every update.
+    /// </summary>
+    protected Action<Furniture, float> updateActions;
 
     public Func<Furniture, Enterability> IsEnterable;
 
@@ -64,7 +71,7 @@ public class Furniture : IXmlSerializable {
         this.width = other.width;
         this.height = other.height;
         this.linksToNeighbour = other.linksToNeighbour;
-        this.funcPositionValidation = other.__IsValidPosition;
+        this.funcPositionValidation = other.DEFAULT__IsValidPosition;
 
         this.furnParameters = new Dictionary<string, float>(other.furnParameters);
         if(other.updateActions != null) this.updateActions = (Action<Furniture, float>)other.updateActions.Clone();
@@ -84,7 +91,7 @@ public class Furniture : IXmlSerializable {
         this.width = width;
         this.height = height;
         this.linksToNeighbour = linksToNeighbour;
-        this.funcPositionValidation = this.__IsValidPosition;
+        this.funcPositionValidation = this.DEFAULT__IsValidPosition;
         this.furnParameters = new Dictionary<string, float>();
     }
 
@@ -138,12 +145,44 @@ public class Furniture : IXmlSerializable {
     public void UnRegisterOnChangedCallback(Action<Furniture> callbackFunc) {
         this.cbOnChanged -= callbackFunc;
     }
-    
+
+    public float GetParameter(string s, float defaultValue = 0) {
+        if(this.furnParameters.ContainsKey(s) == false) {
+            return defaultValue;
+        }
+
+        return this.furnParameters[s];
+    }
+
+    public void SetParameter(string key, float value) {
+        this.furnParameters[key] = value;
+    }
+
+    /// <summary>
+    /// ADDS value to parameter.
+    /// </summary>
+    public void ChangeParameter(string key, float value) {
+        if(this.furnParameters.ContainsKey(key) == false) {
+            this.furnParameters[key] = value;
+            return;
+        }
+        this.furnParameters[key] += value;
+    }
+
+    public void RegisterUpdateAction(Action<Furniture, float> a) {
+        this.updateActions += a;
+    }
+
+    public void UnregisterUpdateAction(Action<Furniture, float> a) {
+        this.updateActions -= a;
+    }
+
     public bool IsValidPosition(Tile t) {
         return this.funcPositionValidation(t);
     }
 
-    bool __IsValidPosition(Tile t) {
+    // This will be replaced by custom checks from LUA for the furniture.
+    protected bool DEFAULT__IsValidPosition(Tile t) {
         // Called pre-build to check environment.
         if(t.Type != TileType.Floor) {
             //Cannot build on top of nothing !
