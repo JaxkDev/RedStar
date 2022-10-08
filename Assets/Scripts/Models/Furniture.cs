@@ -60,6 +60,7 @@ public class Furniture : IXmlSerializable {
     protected Furniture( Furniture other) {
         this.furnitureType = other.furnitureType;
         this.movementCost = other.movementCost;
+        this.roomEnclosure = other.roomEnclosure;
         this.width = other.width;
         this.height = other.height;
         this.linksToNeighbour = other.linksToNeighbour;
@@ -95,6 +96,7 @@ public class Furniture : IXmlSerializable {
         }
 
         Furniture instance = proto.Clone();
+
         instance.tile = tile;
 
         //TODO Assumes 1x1 size.

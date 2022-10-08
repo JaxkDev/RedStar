@@ -107,7 +107,7 @@ public class Room{
                 newRoom.AssignTile(t);
 
                 // Check tiles neighbours.
-                Tile[] ns = tile.GetNeighbours();
+                Tile[] ns = t.GetNeighbours();
                 foreach(Tile t2 in ns) {
                     if(t2 == null || t2.Type == TileType.Empty) {
                         // We have hit open space/edge of map.
@@ -115,18 +115,17 @@ public class Room{
                         // Immediately end flood fill (Major performance impact)
                         // Delete new room and re-assing all tiles back to default.
                         newRoom.UnAssignAllTiles();
-                        // Bail.
                         return;
                     }
 
-                    if(t2 != null && t2.room == oldRoom && (t2.furniture == null || t2.furniture.roomEnclosure == false)) {
+                    if(t2.room == oldRoom && (t2.furniture == null || t2.furniture.roomEnclosure == false)) {
                         tilesToCheck.Enqueue(t2);
                     }
                 }
             }
         }
 
-        // Tell world new room has been created.
+        // Tell world new room has been created. 
         tile.world.AddRoom(newRoom);
     }
 }
