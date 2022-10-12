@@ -16,17 +16,20 @@ public class World: IXmlSerializable {
 
     Tile[,] tiles;
 
-    public List<Character> characters { get; protected set; }
-    public List<Furniture> furnitures { get; protected set; }
-    public List<Room>      rooms      { get; protected set; }
+    public List<Character> characters  { get; protected set; }
+    public List<Furniture> furnitures  { get; protected set; }
+    public List<Room>      rooms       { get; protected set; }
+
+    public InventoryManager inventoryManager;
 
     public Path_TileGraph tileGraph;
 
     Dictionary<string, Furniture> furniturePrototypes;
 
-    public int Width { get; protected set; }
+    public int Width  { get; protected set; }
     public int Height { get; protected set; }
 
+    Action<Inventory> cbInventoryCreated;
     Action<Character> cbCharacterCreated;
     Action<Furniture> cbFurnitureCreated;
     Action<Tile> cbTileChanged;
@@ -52,6 +55,7 @@ public class World: IXmlSerializable {
         this.rooms = new List<Room>();
         this.rooms.Add(new Room()); // Space
         this.jobQueue = new JobQueue();
+        this.inventoryManager = new InventoryManager();
 
         Stopwatch stopwatch = new Stopwatch();
 
@@ -236,6 +240,14 @@ public class World: IXmlSerializable {
         this.cbCharacterCreated -= callbackFunc;
     }
 
+    public void RegisterInventoryCreatedCallback(Action<Inventory> callbackFunc) {
+        this.cbInventoryCreated += callbackFunc;
+    }
+
+    public void UnRegisterInventoryCreatedCallback(Action<Inventory> callbackFunc) {
+        this.cbInventoryCreated -= callbackFunc;
+    }
+
     void OnTileChanged(Tile t) {
         if(this.cbTileChanged != null) {
             this.cbTileChanged(t);
@@ -336,6 +348,15 @@ public class World: IXmlSerializable {
                     this.ReadXml_Characters(reader);
                     break;
             }
+        }
+
+        //HACK - DEBUGGING ONLY! REMOVE ME LATER
+        //
+        Tile t = this.GetTileAt(this.Width / 2, this.Height / 2);
+        Inventory inv = new Inventory();
+        this.inventoryManager.PlaceInventory(t, inv);
+        if(this.cbInventoryCreated != null) {
+            this.cbInventoryCreated(t.inventory);
         }
     }
 

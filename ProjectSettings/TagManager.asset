@@ -47,6 +47,9 @@ TagManager:
   - name: Furniture
     uniqueID: 3064006375
     locked: 0
+  - name: Inventory
+    uniqueID: 2009541321
+    locked: 0
   - name: Jobs
     uniqueID: 3044048227
     locked: 0

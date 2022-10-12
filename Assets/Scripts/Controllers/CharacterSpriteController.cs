@@ -13,10 +13,9 @@ public class CharacterSpriteController : MonoBehaviour {
     Dictionary<string, Sprite> characterSprites;
 
     void Start() {
-        this.characterGameObjectMap = new Dictionary<Character, GameObject>();
-        this.characterSprites = new Dictionary<string, Sprite>();
-
         this.LoadSprites();
+
+        this.characterGameObjectMap = new Dictionary<Character, GameObject>();
 
         WorldController.Instance.world.RegisterCharacterCreatedCallback(this.OnCharacterCreated);
 

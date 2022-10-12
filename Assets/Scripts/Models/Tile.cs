@@ -82,6 +82,38 @@ public class Tile : IXmlSerializable {
         return true;
     }
 
+    public bool PlaceInventory(Inventory newInventory) {
+        if(newInventory == null) {
+            this.inventory = null;
+            return true;
+        }
+
+        if(this.inventory != null) {
+            if(this.inventory.objectType != newInventory.objectType) {
+                Debug.LogError("Trying to assign inventory to a tile with different type of inventory (unable to stack)");
+                return false;
+            }
+
+            int numToMove = newInventory.stackSize;
+            if((this.inventory.stackSize + newInventory.stackSize) > newInventory.maxStackSize) {
+                numToMove = this.inventory.maxStackSize - this.inventory.stackSize;
+                //Debug.LogError("Trying to assign inventory to a tile that would exceed max stack size.");
+                //return false;
+            }
+
+            this.inventory.stackSize += numToMove;
+            newInventory.stackSize -= numToMove;
+
+            return true;
+        }
+
+        //Place new inventory on tile.
+        this.inventory = newInventory.Clone();
+        this.inventory.tile = this;
+        newInventory.stackSize = 0;
+        return true;
+    }
+
     public bool IsNeighbour(Tile tile, bool checkDiagonal = false) {
         return Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || (checkDiagonal && (Mathf.Abs(this.X - tile.X) == 1 && Mathf.Abs(this.Y - tile.Y) == 1));
     }
